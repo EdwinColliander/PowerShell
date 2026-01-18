@@ -29,6 +29,9 @@ param(
     [switch]$Verbose
 )
 
+# --- Required module ---
+
+
 # --- Configuration ---
 $ErrorActionPreference = "Stop"
 $ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -82,7 +85,7 @@ function Test-Prerequisites {
     return $true
 }
 
-# --- Main Logic ---
+# --- Execution ---
 
 begin {
     try {
