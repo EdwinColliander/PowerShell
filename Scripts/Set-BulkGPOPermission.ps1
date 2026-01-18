@@ -1,33 +1,33 @@
 <#
 .DESCRIPTION
-  Detta script itererar genom alla Group Policy Objects från Inputfilen och tilldelar 
-  specificerade behörigheter till ett konto/tjänstekonto/dator/grupp. 
+  This script iterates through all Group Policy Objects from the input file and assigns 
+  specified permissions to an account/service account/computer/group. 
   
-  Användningsfall: När ett tjänstekonto behöver läs- eller redigeringsåtkomst 
-  till GPO:er och ärvda behörigheter inte kan användas.
+  Use case: When a service account needs read or edit access 
+  to GPOs and inherited permissions cannot be used.
   
-  Scriptet loggar framgång/misslyckanden för varje GPO och ger en tydlig överblick 
-  av resultatet.
+  The script logs success/failures for each GPO and provides a clear overview 
+  of the results.
 
 .NOTES
-    Filnamn      : Set-BulkGPOPermission.ps1
-    Författare   : Edwin Colliander
-    Skapad       : 2026-01-08
-    Senast ändrad: 2026-01-12
-    Version      : 1.0
+    Filename     : Set-BulkGPOPermission.ps1
+    Author       : Edwin Colliander
+    Created      : 2026-01-08
+    Last modified: 2026-01-18
+    Version      : 1.0.1
 #>
 
-# --- Nödvändig modul ---
+# --- Required module ---
 Import-Module GroupPolicy
 
-# --- Konfiguration ---
-$InputFile = Import-Csv "C:\temp\Lista.csv" -Delimiter ";" -Encoding UTF8        # Input fil med GPOer som ska modifieras. Viktigt att ID och DisplayName finns med och angivna som propertys
-$TargetName = "DOMAIN\account$"                                                  # Ange konto/tjänstekonto/dator/grupp
-$TargetType = "User"                                                             # Ange kontotyp: User, Group, Computer
-$PermissionLevel = "GpoEditDeleteModifySecurity"                                 # Ange behörighet
-$Log = "C:\temp\log.txt"                                                         # Ange sökväg till loggfil
+# --- Configuration ---
+$InputFile = Import-Csv "C:\temp\list.csv" -Delimiter ";" -Encoding UTF8        # Input file with GPOs to be modified. Important that ID and DisplayName are included and specified as properties
+$TargetName = "DOMAIN\account$"                                                 # Specify account/service account/computer/group
+$TargetType = "User"                                                            # Specify account type: User, Group, Computer
+$PermissionLevel = "GpoEditDeleteModifySecurity"                                # Specify permission level
+$Log = "C:\temp\log.txt"                                                        # Specify path to log file
 
-# --- Utförande ---
+# --- Execution ---
 Add-Content -Path $Log -Value "###############################################"
 Add-Content -Path $Log -Value "Start: $(Get-Date -Format "yyyy-MM-dd: HH:mm:ss")"
 foreach ($gpo in $InputFile) {
