@@ -45,14 +45,14 @@
 [CmdletBinding()]
 param(
     [Parameter(
-    Mandatory=$true,
-    Position = 0
+        Mandatory = $true,
+        Position = 0
     )]
     [string]$GPOName,
 
     [Parameter(
-    Mandatory=$true,
-    Position = 1
+        Mandatory = $true,
+        Position = 1
     )]
     [string[]]$Groups
 )
@@ -71,7 +71,7 @@ $uncSysvol = "\\$pdcEmulator\SYSVOL\$domainDnsRoot"
 
 
 # Retrieve AD objects (groups and GPO)
-$groupObjects = foreach($groupName in $Groups){
+$groupObjects = foreach ($groupName in $Groups) {
     Get-ADGroup -Identity $groupName
 }
 $gpoObject = Get-GPO -Name $GPOName
@@ -97,14 +97,14 @@ $localAdministrators = "*S-1-5-32-544__Members = $($groupSids -join ',')"
 
 # Create GptTmpl.inf with directory structure
 $gptTmplContent = @(
-'[Unicode]'
-'Unicode=yes'
-'[Version]'
-'signature="$CHICAGO$"'
-'Revision=1'
-'[Group Membership]'
-'*S-1-5-32-544__Memberof ='
-$localAdministrators
+    '[Unicode]'
+    'Unicode=yes'
+    '[Version]'
+    'signature="$CHICAGO$"'
+    'Revision=1'
+    '[Group Membership]'
+    '*S-1-5-32-544__Memberof ='
+    $localAdministrators
 )
 $gptTmpl = New-Item -Path "$gpoSysvolRootPath\Machine\Microsoft\Windows NT\SecEdit" -Name GptTmpl.inf -ItemType File -Force
 Set-Content -Path $gptTmpl -Value $gptTmplContent -Encoding Unicode
@@ -112,16 +112,16 @@ Set-Content -Path $gptTmpl -Value $gptTmplContent -Encoding Unicode
 
 # Update GPT.ini
 $gptContent = @(
-'[General]'
-'Version=1'
+    '[General]'
+    'Version=1'
 )
 Set-Content -Path "$gpoSysvolRootPath\GPT.ini" -Value $gptContent -Encoding Ascii
 
 # Update AD object
 Set-ADObject -Identity $gpoObject.Path -Replace @{
-    gPCMachineExtensionNames="[{827D319E-6EAC-11D2-A4EA-00C04F79F83A}{803E14A0-B4FB-11D0-A0D0-00A0C90F574B}]"
-    versionNumber="1"
-    }
+    gPCMachineExtensionNames = "[{827D319E-6EAC-11D2-A4EA-00C04F79F83A}{803E14A0-B4FB-11D0-A0D0-00A0C90F574B}]"
+    versionNumber            = "1"
+}
 
 Write-Verbose "Successfully configured Restricted Groups for GPO '$GPOName'"
 Write-Verbose "Added groups: $($Groups -join ', ')"
